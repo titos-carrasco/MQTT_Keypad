@@ -1,4 +1,4 @@
-// Basado en IRremoteESP8266: IRrecvDumpV2 
+// Basado en IRremoteESP8266: IRrecvDumpV2
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -14,8 +14,11 @@ WiFiClient net;
 #define MQTT_PORT     1883
 #define MQTT_TOPIC    "rcr/ircontrol"
 
+// modificar PubSubClient.h: #define MQTT_MAX_PACKET_SIZE 1024
 #include <PubSubClient.h>
 PubSubClient mqtt( net );
+
+char mqtt_clientID[ 128 ];
 
 //---
 #define IR_SEND_PIN               D5
@@ -28,20 +31,22 @@ IRsend irsend( IR_SEND_PIN );
 
 void setup() {
   pinMode( IR_SEND_PIN, OUTPUT );
-  
+
+  randomSeed( analogRead(0) );
+
   Serial.begin( 115200, SERIAL_8N1, SERIAL_TX_ONLY );
   while ( !Serial ) delay( 50 );
-  Serial.println(); 
+  Serial.println();
   Serial.println();
 
   WiFi.mode( WIFI_STA );
   WiFi.setAutoConnect( true );
   WiFi.begin( WIFI_SSID, WIFI_PASS );
-  wifiReconnect();
-  
+
   mqtt.setServer( MQTT_SERVER, MQTT_PORT );
   mqtt.setCallback( doReceiveMessage );
-  mqttReconnect();
+
+  while( !wifiReconnect() || !mqttReconnect() );
 }
 
 
@@ -50,20 +55,16 @@ bool wifiReconnect(){
     return true;
 
   Serial.print( "Conectando a la WiFi: ." );
-  Serial.flush();
   for( int i=0; i<10; i++ ){
     if( WiFi.status() == WL_CONNECTED ){
       Serial.println( " Ok" );
-      Serial.flush();
       return true;
     }
-        
+
     Serial.print( "." );
-    Serial.flush();
     delay( 500 );
   }
   Serial.println( "Timeout" );
-  Serial.flush();
   return false;
 }
 
@@ -72,40 +73,36 @@ bool mqttReconnect (){
   if( mqtt.connected() )
     return true;
 
-  char clientID[ 128 ];
-  sprintf( clientID, "Node_%04X_%08X", random( 4096 ), ESP.getChipId() );
+  sprintf( mqtt_clientID, "Node_%04X_%08X", random( 4096 ), ESP.getChipId() );
 
   Serial.print( "Conectando a MQTT: ." );
-  Serial.flush();
   for( int i=0; i<10; i++ ){
-    if( mqtt.connect( clientID ) ){
-      Serial.println( " Ok" );
-      Serial.flush();
+    if( mqtt.connect( mqtt_clientID ) ){
       mqtt.subscribe( MQTT_TOPIC, 0 );
+      Serial.println( " Ok" );
       return true;
     }
-        
+
     Serial.print( "." );
-    Serial.flush();
     delay( 500 );
   }
   Serial.println( "Timeout" );
-  Serial.flush();
   return false;
 }
 
- 
+
 void loop() {
   if( !wifiReconnect() )
     return;
 
   if( !mqttReconnect() )
     return;
-    
-  mqtt.loop();  
+
+  mqtt.loop();
+  delay( 100 );
 }
 
-void doReceiveMessage( char *topic, byte *b_payload, unsigned int len  ) { 
+void doReceiveMessage( char *topic, byte *b_payload, unsigned int len  ) {
   char payload[len+1];
   memcpy( payload, b_payload, len );
   payload[len] = 0;
@@ -114,13 +111,13 @@ void doReceiveMessage( char *topic, byte *b_payload, unsigned int len  ) {
   JsonObject& json = jsonBuffer.parseObject( payload );
   JsonArray& jdata = json["data"];
   String id = json["id"];
-    
+
   uint16_t n = jdata.size();
   uint16_t data[n];
   for( uint16_t i=0; i<n; i++ )
     data[i] = jdata[i];
   irsend.sendRaw( data, n, 38 );  // Send a raw data at 38kHz.
-  
+
   Serial.println( id );
   Serial.println();
 }
