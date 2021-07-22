@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">MQTT RControl</string>
-    <string name="SavedServerKey">rcr.rcontrolandmqtt.SAVED_SERVER_KEY</string>
-    <string name="SavedTopicKey">rcr.rcontrolandmqtt.SAVED_TOPIC_KEY</string>
+    <string name="app_name">MQTT KeyPad</string>
+    <string name="SavedServerKey">rcr.mqttkeypad.SAVED_SERVER_KEY</string>
+    <string name="SavedTopicKey">rcr.mqttkeypad.SAVED_TOPIC_KEY</string>
     <string name="K_POWER">PWR</string>
     <string name="K_0">0</string>
     <string name="K_1">1</string>
@@ -18,7 +18,7 @@
     <string name="K_CH_UP">CH+</string>
     <string name="K_CH_DOWN">CH-</string>
     <string name="DefaultServer">test.mosquitto.org:1883</string>
-    <string name="DefaultTopic">rcr/rcontrol</string>
+    <string name="DefaultTopic">rcr/mqttkeypad</string>
     <string name="Server">MQTT Server:Port</string>
     <string name="Topic">MQTT Topic</string>
     <string name="Connect">Connect</string>

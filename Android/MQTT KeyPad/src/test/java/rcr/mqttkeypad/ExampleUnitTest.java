@@ -1,4 +1,4 @@
-package rcr.rcontrolandmqtt;
+package rcr.mqttkeypad;
 
 import org.junit.Test;
 
