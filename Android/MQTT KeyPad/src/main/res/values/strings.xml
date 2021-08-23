@@ -17,9 +17,9 @@
     <string name="K_VOL_DOWN">VOL-</string>
     <string name="K_CH_UP">CH+</string>
     <string name="K_CH_DOWN">CH-</string>
+    <string name="Server">MQTT Server:Port</string>
     <string name="DefaultServer">test.mosquitto.org:1883</string>
     <string name="DefaultTopic">rcr/mqttkeypad</string>
-    <string name="Server">MQTT Server:Port</string>
     <string name="Topic">MQTT Topic</string>
     <string name="Connect">Connect</string>
     <string name="Disconnected">Disconnected from MQTT Server</string>

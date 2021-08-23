@@ -5,7 +5,8 @@ import java.util.UUID;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
+//import androidx.appcompat.app.AppCompatActivity;
+import android.app.Activity;
 //import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +23,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public class MainActivity extends AppCompatActivity {
+//public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener {
     private EditText txtServer;
     private EditText txtTopic;
     private TextView txtStatus;
@@ -40,6 +42,23 @@ public class MainActivity extends AppCompatActivity {
         txtStatus  = findViewById( R.id.txtStatus );
 
         txtStatus.setText( getString( R.string.Disconnected ) );
+
+        findViewById( R.id.btnK_Power ).setOnClickListener( this );
+        findViewById( R.id.btnK_1 ).setOnClickListener( this );
+        findViewById( R.id.btnK_2).setOnClickListener( this );
+        findViewById( R.id.btnK_3 ).setOnClickListener( this );
+        findViewById( R.id.btnK_4 ).setOnClickListener( this );
+        findViewById( R.id.btnK_5 ).setOnClickListener( this );
+        findViewById( R.id.btnK_6 ).setOnClickListener( this );
+        findViewById( R.id.btnK_7 ).setOnClickListener( this );
+        findViewById( R.id.btnK_8 ).setOnClickListener( this );
+        findViewById( R.id.btnK_9 ).setOnClickListener( this );
+        findViewById( R.id.btnK_0 ).setOnClickListener( this );
+        findViewById( R.id.btnK_VOL_UP ).setOnClickListener( this );
+        findViewById( R.id.btnK_VOL_DOWN ).setOnClickListener( this );
+        findViewById( R.id.btnK_CH_UP ).setOnClickListener( this );
+        findViewById( R.id.btnK_CH_DOWN ).setOnClickListener( this );
+        findViewById( R.id.btnK_Connect ).setOnClickListener( this );
 
         //Log.d( "onCreate", "End" );
     }
@@ -101,21 +120,17 @@ public class MainActivity extends AppCompatActivity {
         //Log.d( "onDestroy", "End" );
     }
 
-    public void onConnectClicked( View v ) {
-        //Log.d( "onConnectClicked", "Begin" );
-
-        mqttConnect();
-
-        //Log.d( "onConnectClicked", "End" );
-    }
-
-    public void onButtonClicked( View v ) {
-        //Log.d( "onButtonClicked", "Begin" );
-
-        String topic = ( (Button)v ).getText().toString();
-        mqttPublish( txtTopic.getText().toString(), topic );
-
-        //Log.d( "onButtonClicked", "End" );
+    @Override
+    public void onClick( View v ) {
+        //Log.d( "onClick", "Begin" );
+        int id = v.getId();
+        if (id == R.id.btnK_Power || id == R.id.btnK_1 || id == R.id.btnK_2 || id == R.id.btnK_3 || id == R.id.btnK_4 || id == R.id.btnK_5 || id == R.id.btnK_6 || id == R.id.btnK_7 || id == R.id.btnK_8 || id == R.id.btnK_9 || id == R.id.btnK_0 || id == R.id.btnK_VOL_UP || id == R.id.btnK_VOL_DOWN || id == R.id.btnK_CH_UP || id == R.id.btnK_CH_DOWN) {
+            String topic = ((Button) v).getText().toString();
+            mqttPublish(txtTopic.getText().toString(), topic);
+        } else if (id == R.id.btnK_Connect) {
+            mqttConnect();
+        }
+        //Log.d( "onClick", "End" );
     }
 
     private void mqttConnect() {
@@ -147,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void messageArrived( String topic, MqttMessage mqttMessage ) throws Exception {
+                public void messageArrived( String topic, MqttMessage mqttMessage ) {
                     Toast.makeText( getApplicationContext(), getString( R.string.MessageArrived ), Toast.LENGTH_SHORT ).show();
                 }
 
